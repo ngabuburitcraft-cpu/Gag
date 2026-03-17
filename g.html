@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aetheria: Rise of Legends</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Teko:wght@600&display=swap');
+
+        body {
+            background-color: #050505;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            transition: transform 0.1s, background-color 0.5s; 
+        }
+
+        /* Layar bergetar saat runtuh */
+        .shake-screen {
+            animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+        }
+
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-3px, 3px, 0) rotate(-1deg); }
+            20%, 80% { transform: translate3d(4px, -3px, 0) rotate(1deg); }
+            30%, 50%, 70% { transform: translate3d(-5px, 3px, 0) rotate(-2deg); }
+            40%, 60% { transform: translate3d(5px, -3px, 0) rotate(2deg); }
+        }
+
+        /* Efek kilatan cahaya saat teks baru muncul */
+        .flash-screen {
+            animation: flash 1.5s ease-out;
+        }
+
+        @keyframes flash {
+            0% { background-color: #ffffff; }
+            100% { background-color: #050505; }
+        }
+
+        .container {
+            text-align: center;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Teks Lama - Diperkecil */
+        .old-text {
+            font-family: 'Teko', sans-serif;
+            font-size: 3.5rem; /* Ukuran diperkecil dari 6rem */
+            letter-spacing: 3px;
+            color: #aaaaaa;
+            text-transform: uppercase;
+            text-shadow: 2px 2px 0px #222;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+            display: inline-block;
+        }
+
+        .shatter {
+            animation: dropDown 1s cubic-bezier(0.55, 0.085, 0.68, 0.53) forwards;
+        }
+
+        @keyframes dropDown {
+            0% { transform: translateY(0) rotate(0deg) scale(1); opacity: 1; }
+            20% { transform: translateY(-15px) rotate(-3deg) scale(1.02); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(25deg) scale(0.6); opacity: 0; }
+        }
+
+        /* Teks Baru - Diperkecil & Elegan */
+        .new-text {
+            font-family: 'Cinzel', serif;
+            font-size: 3rem; /* Ukuran diperkecil dari 5rem */
+            font-weight: bold;
+            color: #ffd700; 
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.8), 0 0 30px rgba(255, 215, 0, 0.5);
+            opacity: 0;
+            display: none; 
+        }
+
+        .new-text span {
+            font-size: 1.5rem; /* Subjudul di dalam teks diperkecil */
+            color: #fff; 
+            text-shadow: 0 0 8px rgba(255,255,255,0.5);
+            display: block;
+            margin-top: 5px;
+        }
+
+        .rise {
+            display: block;
+            animation: magicRise 2s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        }
+
+        @keyframes magicRise {
+            0% { opacity: 0; transform: scale(0.9) translateY(30px); filter: blur(10px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); }
+        }
+
+        /* Subtitle Bawah */
+        .subtitle {
+            font-family: 'Cinzel', serif;
+            font-size: 1rem; /* Diperkecil */
+            color: #cccccc;
+            margin-top: 15px;
+            letter-spacing: 2px;
+            opacity: 0;
+            transition: opacity 1.5s ease-in-out;
+        }
+
+        .fade-in { opacity: 1 !important; }
+        .fade-out { opacity: 0 !important; transition: opacity 1s ease-in-out; }
+
+        /* Tombol Mulai */
+        #start-btn {
+            font-family: 'Cinzel', serif;
+            font-size: 1.2rem;
+            padding: 15px 30px;
+            background: transparent;
+            color: #ffd700;
+            border: 2px solid #ffd700;
+            cursor: pointer;
+            transition: 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        #start-btn:hover {
+            background: #ffd700;
+            color: #050505;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
+        }
+    </style>
+</head>
+<body>
+
+    <audio id="sfx-crumble" src="https://upload.wikimedia.org/wikipedia/commons/3/30/Rock_slide.ogg"></audio>
+    <audio id="sfx-epic" src="https://upload.wikimedia.org/wikipedia/commons/b/b5/A_C_E_A_Aegis_Magic_Chime.ogg"></audio>
+
+    <div class="container">
+        <button id="start-btn">Mulai Perjalanan</button>
+        <div id="main-text"></div>
+        <div id="subtitle" class="subtitle"></div>
+    </div>
+
+    <script>
+        const startBtn = document.getElementById('start-btn');
+        const mainText = document.getElementById('main-text');
+        const subtitle = document.getElementById('subtitle');
+        const body = document.body;
+
+        const sfxCrumble = document.getElementById('sfx-crumble');
+        const sfxEpic = document.getElementById('sfx-epic');
+
+        const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+        startBtn.addEventListener('click', async () => {
+            // Sembunyikan tombol
+            startBtn.style.display = 'none';
+
+            /* === SCENE 1: NGABUBURIT CRAFT -> AETHERIA === */
+            mainText.className = 'old-text';
+            mainText.innerText = 'NGABUBURIT CRAFT';
+            await sleep(500);
+            mainText.classList.add('fade-in');
+            await sleep(2000);
+
+            // Efek Runtuh
+            sfxCrumble.volume = 0.8;
+            sfxCrumble.currentTime = 0;
+            sfxCrumble.play(); // Mainkan suara runtuh
+            
+            body.classList.add('shake-screen');
+            mainText.classList.remove('fade-in');
+            mainText.classList.add('shatter');
+            await sleep(800); 
+            body.classList.remove('shake-screen');
+
+            // Efek Teks Baru Muncul
+            sfxEpic.volume = 1.0;
+            sfxEpic.currentTime = 0;
+            sfxEpic.play(); // Mainkan suara magis/epik
+            
+            body.classList.add('flash-screen'); // Layar berkedip terang
+            mainText.className = 'new-text rise';
+            mainText.innerHTML = 'AETHERIA<span>Rise of Legends</span>';
+            
+            subtitle.innerText = "Prepare for Glory";
+            subtitle.className = 'subtitle fade-in';
+            
+            await sleep(3500);
+            body.classList.remove('flash-screen');
+
+            /* === TRANSISI === */
+            mainText.classList.add('fade-out');
+            subtitle.classList.remove('fade-in');
+            await sleep(1500);
+
+            /* === SCENE 2: NGABUBURIT SMP -> AETHERIA SMP === */
+            mainText.className = 'old-text';
+            mainText.innerText = 'NGABUBURIT SMP';
+            subtitle.innerText = "";
+            await sleep(100);
+            mainText.classList.add('fade-in');
+            await sleep(2000);
+
+            // Efek Runtuh Kedua
+            sfxCrumble.currentTime = 0;
+            sfxCrumble.play();
+            
+            body.classList.add('shake-screen');
+            mainText.classList.remove('fade-in');
+            mainText.classList.add('shatter');
+            await sleep(800); 
+            body.classList.remove('shake-screen');
+
+            // Efek Teks Baru Muncul Kedua
+            sfxEpic.currentTime = 0;
+            sfxEpic.play();
+            
+            body.classList.add('flash-screen');
+            mainText.className = 'new-text rise';
+            mainText.innerHTML = 'AETHERIA SMP';
+            
+            subtitle.innerText = "A New Journey Begins";
+            subtitle.className = 'subtitle fade-in';
+        });
+    </script>
+</body>
+</html>
